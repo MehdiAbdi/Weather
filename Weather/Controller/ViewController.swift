@@ -7,12 +7,21 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
     var uIElement = UIElement()
+    var weatherService = WeatherService()
+    var locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        locationManager.delegate = self
+        weatherService.delegate = self
+        
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
         
         view.addSubview(uIElement.setUpBackgroundImage)
         view.addSubview(uIElement.backgroundBlur)
@@ -58,3 +67,42 @@ class ViewController: UIViewController {
     
 }
 
+// MARK: - Location Manager Delegate Extension
+
+extension ViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            let latitude =  location.coordinate.latitude
+            let longitude = location.coordinate.longitude
+            
+            weatherService.fetchBaseURLKey(lat: latitude, lon: longitude)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+}
+
+// MARK: - WeatherService Delegate Extension
+
+extension ViewController: WeatherServiceDelegate {
+    func didUpdateWeatherKey(_ data: WGeoPositionData) {
+        weatherService.fetchBaseURLCondition(key: data.key)
+        
+        DispatchQueue.main.async {
+            self.uIElement.locationLabel.text = data.localizedName
+        }
+    }
+    
+    func didUpdateWeatherCondition(_ data: WCurrentConditionData) {
+        DispatchQueue.main.async {
+            self.uIElement.temperatureLabel.text = data.temperatureInString
+            self.uIElement.imageCondition.image = UIImage(named: data.imageCondition)
+        }
+    }
+    
+    func didFaildWithError(_ error: Error) {
+        print(error)
+    }
+}

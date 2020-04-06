@@ -41,7 +41,7 @@ class UIElement {
     var temperatureLabel: UILabel = {
         var temp = UILabel()
         temp.translatesAutoresizingMaskIntoConstraints = false
-        temp.font = UIFont.systemFont(ofSize: 40)
+        temp.font = UIFont.systemFont(ofSize: 35)
         temp.textAlignment = .center
         temp.textColor = UIColor(named: "textColor")
         temp.text = "00"
@@ -53,7 +53,7 @@ class UIElement {
         var location = UILabel()
         location.translatesAutoresizingMaskIntoConstraints = false
         location.textAlignment = .center
-        location.font = UIFont.systemFont(ofSize: 40)
+        location.font = UIFont.systemFont(ofSize: 35)
         location.textColor = UIColor(named: "textColor")
         location.text = "Location"
         
